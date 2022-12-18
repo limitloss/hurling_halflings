@@ -43,8 +43,16 @@ def scatter_n(num_scatter=3, cur_pos=[[3,3]], grid_size=(7,7,)):
 
 
 def main():
-    cur_pos, new_grid = scatter_n(num_scatter=3)
     
+    start_pos = [3,3]
+    grid_size = (7,7,)
+    # Replace with None with you don't want to save
+    svg_savename = 'grid_basic.svg'
+    
+    # Throwing with a tree is always 3 scatter rolls
+    cur_pos, new_grid = scatter_n(num_scatter=3, cur_pos=[start_pos], grid_size=grid_size)
+    
+    # Fig size parity with grid size is coincidence
     fig, ax1 = plt.subplots(figsize=(7,7))
     plt.imshow(new_grid, cmap='plasma')
     
@@ -54,12 +62,29 @@ def main():
     # Add text labels to each grid square
     for (j,i),label in np.ndenumerate(new_grid):
         prec = 1
-        label = np.around(label,prec)
+        label = str(np.around(label,prec))+'%'
+        
         ax1.text(i,j,label,ha='center',va='center',color='black')
+    if svg_savename:
+        plt.savefig(svg_savename,dpi=350)
     plt.show() 
     
-    pass
+    
+    # Prob of landing in the donut around the aimed at square
+    donut = get_local_inds(*start_pos)
+    donut_prob = np.around(np.sum(new_grid[donut[:,0],donut[:,1]]),prec)    
+    print(f'Prob. of Landing 1 Sq Off:\t\t{donut_prob}%')
 
+    # Prob of landing and moving forward 
+    start_i, start_j = start_pos
+    fwd_prob = np.around(np.sum(new_grid[:start_i,:]),prec)
+    print(f'Prob. of Landing Forward:\t\t{fwd_prob}%')
+    
+    print(f'Prob. of Landing Exactly:\t\t{np.around(new_grid[start_pos[0],start_pos[1]],prec)}%')
+
+
+    return
+    
 
 
 
