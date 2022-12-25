@@ -18,7 +18,9 @@ get_local_inds = lambda i,j: np.array([[i-1,j-1], [i-1,j], [i-1,j+1],
 
 
 def scatter(positions, current_grid):
-    
+    ''' Performs an individual scatter assuming one has happened before even if
+    its just the ball landing in a single position.
+    '''
     new_pos = np.empty((0,2),dtype=np.int32)
     # for each position we add +1 to all surrounding positions
     for position in positions:
@@ -34,17 +36,26 @@ def scatter(positions, current_grid):
     return new_pos, current_grid
 
 def scatter_n(num_scatter=3, cur_pos=[[3,3]], grid_size=(7,7,)):
-    
+    ''' Calculates the spread of ball scatter on a grid after a number of scatters
+    '''
     for i in range(num_scatter):
         new_grid = np.zeros(grid_size,dtype=np.int32)
         cur_pos, new_grid = scatter(positions=cur_pos, current_grid=new_grid)
     
     return cur_pos, new_grid
 
+def print_tabdelim(array):
+    ''' Quick and dirty function to print a numpy array with tab delimitation so 
+    it can be copy-pasted into excel or sheets
+    '''
+    print('Tab-Delim Array for Spreadsheets:\n')
+    for row in array:
+        print('\t'.join(row.astype(str)))
+    print()
+    return
 
 def main():
-    
-    start_pos = [3,3]
+    start_pos = [3,3] 
     grid_size = (7,7,)
     # Replace with None with you don't want to save
     svg_savename = 'grid_basic.svg'
@@ -56,7 +67,10 @@ def main():
     fig, ax1 = plt.subplots(figsize=(7,7))
     plt.imshow(new_grid, cmap='plasma')
     
-    # Nomralize and Percent Convert
+    # Uncomment below to print the grid for use in a spreadsheet
+    print_tabdelim(new_grid)
+    
+    # Normalize and Percent Convert
     new_grid = (new_grid/new_grid.sum())*100
     
     # Add text labels to each grid square
