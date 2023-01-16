@@ -36,7 +36,7 @@ def scatter(positions, current_grid):
     return new_pos, current_grid
 
 def scatter_n(num_scatter=3, cur_pos=[[3,3]], grid_size=(7,7,)):
-    ''' Calculates the spread of ball scatter on a grid after a number of scatters
+    ''' Calculates the spread of ball scatter on a grid after a specified number of scatters
     '''
     for i in range(num_scatter):
         new_grid = np.zeros(grid_size,dtype=np.int32)
@@ -46,7 +46,7 @@ def scatter_n(num_scatter=3, cur_pos=[[3,3]], grid_size=(7,7,)):
 
 def print_tabdelim(array):
     ''' Quick and dirty function to print a numpy array with tab delimitation so 
-    it can be copy-pasted into excel or sheets
+    it can be copy-pasted into excel or sheets for ease
     '''
     print('Tab-Delim Array for Spreadsheets:\n')
     for row in array:
@@ -55,10 +55,18 @@ def print_tabdelim(array):
     return
 
 def main():
+    
+    # FLAGS 
+    save_svg = False                         # saves grid of scatter probs with matplotlib
+    svg_savename = './imgs/grid_basic.svg'   # save location if saving
+    print_tab_grid = False                   # dumps the non-normalized prob weight matrix to stdout 
+                                             # for the
+    
+    
+    # Starting Values for a half of blood bowl
     start_pos = [3,3] 
     grid_size = (7,7,)
-    # Replace with None with you don't want to save
-    svg_savename = 'grid_basic.svg'
+    
     
     # Throwing with a tree is always 3 scatter rolls
     cur_pos, new_grid = scatter_n(num_scatter=3, cur_pos=[start_pos], grid_size=grid_size)
@@ -67,8 +75,9 @@ def main():
     fig, ax1 = plt.subplots(figsize=(7,7))
     plt.imshow(new_grid, cmap='plasma')
     
-    # Uncomment below to print the grid for use in a spreadsheet
-    print_tabdelim(new_grid)
+    if print_tab_grid:
+        # prints the grid for use in a spreadsheet etc
+        print_tabdelim(new_grid)
     
     # Normalize and Percent Convert
     new_grid = (new_grid/new_grid.sum())*100
@@ -77,10 +86,12 @@ def main():
     for (j,i),label in np.ndenumerate(new_grid):
         prec = 1
         label = str(np.around(label,prec))+'%'
-        
         ax1.text(i,j,label,ha='center',va='center',color='black')
-    if svg_savename:
+    
+    if save_svg:
+        print(f'Saving SVG to {svg_savename}\n')
         plt.savefig(svg_savename,dpi=350)
+    
     plt.show() 
     
     
@@ -93,8 +104,9 @@ def main():
     start_i, start_j = start_pos
     fwd_prob = np.around(np.sum(new_grid[:start_i,:]),prec)
     print(f'Prob. of Landing Forward:\t\t{fwd_prob}%')
-    
     print(f'Prob. of Landing Exactly:\t\t{np.around(new_grid[start_pos[0],start_pos[1]],prec)}%')
+
+    
 
 
     return
